@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "metastore.name" . }}-cfg
+  labels:
+    app.kubernetes.io/name: {{ include "metastore.name" . }}
+    {{- include "metastore.labels" . | nindent 4 }}
+data:
+{{ toYaml .Values.site | indent 2 }}

@@ -1,0 +1,85 @@
+{{- if gt (int .Values.server.worker.count) 0 }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "trino.worker" . }}
+  labels:
+    app: {{ template "trino.name" . }}
+    chart: {{ template "trino.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: worker
+spec:
+  replicas: {{ .Values.server.worker.count }}
+  selector:
+    matchLabels:
+      app: {{ template "trino.name" . }}
+      release: {{ .Release.Name }}
+      component: worker
+  template:
+    metadata:
+      labels:
+        app: {{ template "trino.name" . }}
+        release: {{ .Release.Name }}
+        component: worker
+    spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ template "trino.worker" . }}
+        - name: catalog-volume
+          configMap:
+            name: {{ template "trino.catalog" . }}
+{{ toYaml .Values.server.worker.volume | indent 8 }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-worker
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+          volumeMounts:
+            - mountPath: {{ .Values.server.propertiesPath }}
+              name: config-volume
+            - mountPath: {{ .Values.server.propertiesPath }}/catalog
+              name: catalog-volume
+{{ toYaml .Values.server.worker.volumeMount | indent 12 }} 
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.ports.http }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /v1/info
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /v1/info
+              port: http
+          resources:
+            {{- toYaml .Values.server.worker.resource | nindent 12 }}      
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - sh
+                  - '-c'
+                  - >-
+                    curl -v  -H "X-Trino-User: admin" -X PUT -d
+                    '"SHUTTING_DOWN"' -H "Content-type: application/json"
+                    http://localhost:8080/v1/info/state && sleep {{ .Values.server.worker.graceTimeoutSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.server.worker.graceTimeoutSeconds }}
+      {{- with .Values.server.worker.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

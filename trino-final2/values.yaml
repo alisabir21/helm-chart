@@ -1,0 +1,172 @@
+# Default values for trino.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: trinodb/trino
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart version.
+  tag: latest
+
+namespace: trino-stg  
+
+imagePullSecrets: 
+  - name: registry-credentials
+  
+server:
+  propertiesPath: /etc/trino
+  node:
+    environment: production
+    dataDir: /data/trino
+    pluginDir: /usr/lib/trino/plugin
+  log:
+    trino:
+      level: INFO
+  
+  coordinator:
+    properties:
+      config.properties: |
+        coordinator=true
+        node-scheduler.include-coordinator=false
+        http-server.http.port=8080
+        query.max-memory=5000GB
+        discovery-server.enabled=true
+        discovery.uri=http://localhost:8080
+        protocol.v1.alternate-header-name=Presto
+        # CBO and Query Optimizer
+        optimizer.join-reordering-strategy=AUTOMATIC
+        join-distribution-type=AUTOMATIC
+        http-server.threads.max=500
+        http-server.log.path=/tmp/http-request.log
+        http-server.log.enabled=true
+      jvm.config: |
+        -server
+        -Xmx60G
+        -XX:+UseG1GC
+        -XX:G1HeapRegionSize=32M
+        -XX:+UseGCOverheadLimit
+        -XX:+ExplicitGCInvokesConcurrent
+        -XX:+HeapDumpOnOutOfMemoryError
+        -XX:+ExitOnOutOfMemoryError
+        -Djdk.attach.allowAttachSelf=true
+        -XX:-UseBiasedLocking
+        -XX:ReservedCodeCacheSize=512M
+        -XX:PerMethodRecompilationCutoff=10000
+        -XX:PerBytecodeRecompilationCutoff=10000
+        -Djdk.nio.maxCachedBufferSize=2000000
+        -Xlog:gc*:file=/tmp/gc.log:time
+    volume:
+    - name: spill-volume
+      configMap:
+        name: stx-trino-test-coordinator
+    - name: cache-volume
+      configMap:
+        name: stx-trino-test-coordinator
+    volumeMount:
+    - mountPath: /mnt/spill
+      name: spill-volume
+    - mountPath: /mnt/cache
+      name: cache-volume
+    resource: 
+      limits:
+        cpu: '20'
+        memory: 90Gi
+      requests:
+        cpu: '10'
+        memory: 90Gi
+    nodeSelector: {kubernetes.io/hostname: seagate0625}
+    tolerations: []
+    affinity: {}
+  worker:
+    count: 2
+    graceTimeoutSeconds: 1800
+    properties: 
+      config.properties: |
+        coordinator=false
+        http-server.http.port=8080
+        query.max-memory=5000GB
+        query.max-memory-per-node=40GB
+        query.max-total-memory-per-node=45GB
+        # memory.heap-headroom-per-node=25GB
+        discovery.uri=http://stx-trino-test:8080
+        # CBO and Query Optimizer
+        optimizer.join-reordering-strategy=AUTOMATIC
+        join-distribution-type=AUTOMATIC
+        http-server.threads.max=500
+        http-server.log.path=/tmp/http-request.log
+        http-server.log.enabled=true
+      jvm.config: |
+        -Xmx80G
+        -XX:+UseG1GC
+        -XX:G1HeapRegionSize=32M
+        -XX:+UseGCOverheadLimit
+        -XX:+ExplicitGCInvokesConcurrent
+        -XX:+HeapDumpOnOutOfMemoryError
+        -XX:+ExitOnOutOfMemoryError
+        -Djdk.attach.allowAttachSelf=true
+        -XX:-UseBiasedLocking
+        -XX:ReservedCodeCacheSize=512M
+        -XX:PerMethodRecompilationCutoff=10000
+        -XX:PerBytecodeRecompilationCutoff=10000
+        -Djdk.nio.maxCachedBufferSize=2000000
+        -Xlog:gc*:file=/tmp/gc.log:time
+    volume: 
+    - name: spill-volume
+      configMap:
+        name: stx-trino-test-coordinator
+    - name: cache-volume
+      configMap:
+        name: stx-trino-test-coordinator
+    volumeMount:
+    - mountPath: /mnt/spill
+      name: spill-volume
+    - mountPath: /mnt/cache
+      name: cache-volume    
+    resource:      
+      limits:
+        cpu: '28'
+        memory: 110Gi
+      requests:
+        cpu: '25'
+        memory: 110Gi
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  catalog:
+    properties: 
+      hive.properties: |
+        connector.name=hive-hadoop2
+        hive.metastore.uri=thrift-uri
+        hive.max-partitions-per-writers=4000
+        hive.collect-column-statistics-on-write=true
+        hive.non-managed-table-writes-enabled=true
+        hive.allow-drop-table=true
+        hive.s3.max-connections=500
+        hive.metastore-timeout=5m
+        hive.s3.aws-access-key=accesskey
+        hive.s3.aws-secret-key=secretkey
+        hive.s3.endpoint=https://s3.us-west-4.svl.lyvecloud.seagate.com
+        hive.s3.path-style-access=true
+        hive.s3.ssl.enabled=true
+        hive.allow-register-partition-procedure=true
+env: []
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+
+service:
+  type: ClusterIP
+  annotations: 
+    imageregistry: "https://hub.docker.com/"
+  ports: 
+    http: 8080
+    https: 8443
+  loadBalancerSourceRanges: []
+  
+ingress:
+  enabled: true
+  hosts: "trino-helm.edp.seagate.com"
+  annotations: 
+    imageregistry: "https://hub.docker.com/"
+  path: {}

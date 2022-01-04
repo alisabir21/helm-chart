@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "metastore.name" . }}
+  labels:
+    app: {{ template "metastore.name" . }}
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "metastore.name" . }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ template "metastore.name" . }}
+    spec:
+      containers:
+      - name: {{ template "metastore.name" . }}
+        image: {{ .Values.image.name }}
+        env:
+{{ toYaml .Values.env | indent 10 }}
+        ports:
+        - containerPort: {{ .Values.service.ports.port }}
+        volumeMounts:
+        - name: metastore-cfg-vol
+          mountPath: /opt/hive-metastore/conf/metastore-site.xml
+          subPath: metastore-site.xml
+        - name: metastore-cfg-vol
+          mountPath: /opt/hadoop/etc/hadoop/core-site.xml
+          subPath: core-site.xml
+        command: ["/opt/hive-metastore/bin/start-metastore"]
+        args: ["-p", "9083"]
+        resources:
+{{ toYaml .Values.resource | indent 10 }}
+        imagePullPolicy: Always
+      volumes:
+        - name: metastore-cfg-vol
+          configMap:
+            name: {{ template "metastore.name" . }}-cfg
+            

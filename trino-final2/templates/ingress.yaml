@@ -1,0 +1,19 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ template "trino.ingress" . }}
+  namespace: {{ .Values.namespace }}
+  annotations: 
+    {{ toYaml .Values.ingress.annotations | indent 2 }}
+spec:
+  rules:
+    - host: {{ .Values.ingress.hosts }}
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ template "trino.name" . }}
+                port:
+                  number: {{ .Values.service.ports.http }}

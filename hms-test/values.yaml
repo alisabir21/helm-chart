@@ -1,0 +1,102 @@
+---
+## You can override the default chart name (i.e., .Charts.name) when desired using the following parameter.
+## This is the only way to have more than one deployment of this
+nameOverride: null
+
+## Number of Hive Metastore instances.
+## Following the documentation, given Hive Metastore is stateless we could have more than one instance.
+## https://cwiki.apache.org/confluence/display/Hive/AdminManual+Metastore+Administration
+replicaCount: 1
+
+## Default Hive image and tag. Please build image locally before applying this.
+image:
+  name: joshuarobinson/hivemetastore
+  tag: latest
+  pullPolicy: IfNotPresent
+
+
+env:
+  - name: AWS_ACCESS_KEY_ID
+    value: acccesskey 
+  - name: AWS_SECRET_ACCESS_KEY
+    value: secretkey
+
+## Resource requests and limits: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+resource:
+  limits:
+    cpu: 4
+    memory: 32G
+  requests:
+    cpu: 4
+    memory: 32G
+service:
+  type: ClusterIP
+  ports:
+    name: thrift
+    port: 9083
+    targetPort: 9083
+    protocol: TCP
+site:
+  core-site.xml: |
+    <configuration>
+        <property>
+            <name>fs.s3a.connection.ssl.enabled</name>
+            <value>true</value>
+        </property>
+        <property>
+            <name>fs.s3a.endpoint</name>
+            <value>https://s3.us-west-4.svl.lyvecloud.seagate.com</value>
+        </property>
+        <property>
+            <name>fs.s3a.fast.upload</name>
+            <value>true</value>
+        </property>
+        <property>
+            <name>fs.s3a.path.style.access</name>
+            <value>true</value>
+        </property>
+        <property>
+            <name>fs.s3a.access.key</name>
+            <value>accesskey</value>
+        </property>
+        <property>
+            <name>fs.s3a.secret.key</name>
+            <value>secretkey</value>
+        </property>
+    </configuration>
+  metastore-site.xml: |
+    <configuration>
+        <property>
+            <name>metastore.task.threads.always</name>
+            <value>org.apache.hadoop.hive.metastore.events.EventCleanerTask</value>
+        </property>
+        <property>
+            <name>metastore.expression.proxy</name>
+            <value>org.apache.hadoop.hive.metastore.DefaultPartitionExpressionProxy</value>
+        </property>
+        <property>
+            <name>javax.jdo.option.ConnectionDriverName</name>
+            <value>com.mysql.jdbc.Driver</value>
+        </property>
+        <property>
+            <name>javax.jdo.option.ConnectionURL</name>
+            <value>jdbc:mysql://38.92.43.81:3306/hive?createDatabaseIfNotExist=true</value>
+        </property>
+        <property>
+            <name>javax.jdo.option.ConnectionUserName</name>
+            <value>root</value>
+        </property>
+        <property>
+            <name>javax.jdo.option.ConnectionPassword</name>
+            <value>Seagate@123</value>
+        </property>
+        <property>
+            <name>metastore.warehouse.dir</name>
+            <value>s3a://stx-lcva03-ehc-prd-data-v2/warehouse</value>
+        </property>
+        <property>
+            <name>metastore.thrift.port</name>
+            <value>9083</value>
+        </property>
+    </configuration>
+
