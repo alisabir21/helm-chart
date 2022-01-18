@@ -14,6 +14,6 @@ spec:
             pathType: ImplementationSpecific
             backend:
               service:
-                name: {{ template "trino.name" . }}
+                name: {{ template "trino.fullname" . }}
                 port:
                   number: {{ .Values.service.ports.http }}

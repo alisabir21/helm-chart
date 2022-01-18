@@ -4,7 +4,7 @@
 
 image:
   repository: trinodb/trino
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart version.
   tag: latest
 
@@ -169,4 +169,7 @@ ingress:
   hosts: "trino-helm.edp.seagate.com"
   annotations: 
     imageregistry: "https://hub.docker.com/"
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'false'
+    service.alpha.kubernetes.io/app-protocols: '{"https":"HTTPS"}'
   path: {}

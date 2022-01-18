@@ -12,7 +12,7 @@ replicaCount: 1
 image:
   name: joshuarobinson/hivemetastore
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 
 env:

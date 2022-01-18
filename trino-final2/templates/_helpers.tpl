@@ -64,7 +64,7 @@ Create chart name and version as used by the chart label.
 
 
 {{- define "trino.ingress" -}}
-{{ template "trino.fullname" . }}-catalog
+{{ template "trino.fullname" . }}
 {{- end -}}
 
 
