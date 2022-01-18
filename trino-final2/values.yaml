@@ -167,7 +167,7 @@ service:
 ingress:
   enabled: true
   hosts: "trino-helm.edp.seagate.com"
-  annotations: 
+  annotations:
     imageregistry: "https://hub.docker.com/"
     nginx.ingress.kubernetes.io/backend-protocol: HTTPS
     nginx.ingress.kubernetes.io/force-ssl-redirect: 'false'

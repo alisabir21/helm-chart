@@ -4,7 +4,7 @@ metadata:
   name: {{ template "trino.ingress" . }}
   namespace: {{ .Values.namespace }}
   annotations: 
-    {{ toYaml .Values.ingress.annotations | indent 2 }}
+{{ toYaml .Values.ingress.annotations | indent 4 }}
 spec:
   rules:
     - host: {{ .Values.ingress.hosts }}
