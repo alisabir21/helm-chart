@@ -58,10 +58,10 @@ server:
     volume:
     - name: spill-volume
       configMap:
-        name: stx-trino-test-coordinator
+        name: stx-trino-coordinator
     - name: cache-volume
       configMap:
-        name: stx-trino-test-coordinator
+        name: stx-trino-coordinator
     volumeMount:
     - mountPath: /mnt/spill
       name: spill-volume
@@ -74,7 +74,7 @@ server:
       requests:
         cpu: '10'
         memory: 90Gi
-    nodeSelector: {kubernetes.io/hostname: seagate0625}
+    nodeSelector: {}
     tolerations: []
     affinity: {}
   worker:
@@ -113,10 +113,10 @@ server:
     volume: 
     - name: spill-volume
       configMap:
-        name: stx-trino-test-coordinator
+        name: stx-trino-coordinator
     - name: cache-volume
       configMap:
-        name: stx-trino-test-coordinator
+        name: stx-trino-coordinator
     volumeMount:
     - mountPath: /mnt/spill
       name: spill-volume
