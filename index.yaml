@@ -1,31 +1,31 @@
 apiVersion: v1
 entries:
-  metastore-test:
+  metastore:
   - apiVersion: v2
-    created: "2022-01-18T19:19:48.7557971+05:30"
+    created: "2022-03-14T12:45:33.7591704+05:30"
     description: Hive Metastore Deployment
-    digest: eb3259306b7de59278a990f383fb12642d9b12ba94933afbb4eb681138c64e3b
-    name: metastore-test
+    digest: e600e9106fb56a18c659f1af56d0357ac093a0f33b1ff1a7e672e4fe6ffa8035
+    name: metastore
     type: application
     urls:
-    - https://alisabir21.github.io/helm-chart/metastore-test-0.3.0.tgz
+    - https://alisabir21.github.io/helm-chart/metastore-0.3.0.tgz
     version: 0.3.0
-  trino-test:
+  trino:
   - apiVersion: v2
     appVersion: "364"
-    created: "2022-01-18T19:19:48.7586332+05:30"
+    created: "2022-03-14T12:45:33.7591704+05:30"
     description: Fast distributed SQL query engine for big data analytics
-    digest: b38601a3c7fa58803b944a1ea4aec7f246de7eca6e39c5e38332894a8f196d4e
+    digest: 3c555162d6bd3aa11e9ed10c0ffd8e90866e999f455eec123d4b651e662b3ae9
     home: https://trino.io/
     icon: https://trino.io/assets/trino.png
     maintainers:
     - name: Trino community
-    name: trino-test
+    name: trino
     sources:
     - https://github.com/trinodb/charts
     - https://github.com/trinodb/trino/tree/master/core/docker
     type: application
     urls:
-    - https://alisabir21.github.io/helm-chart/trino-test-0.5.0.tgz
+    - https://alisabir21.github.io/helm-chart/trino-0.5.0.tgz
     version: 0.5.0
-generated: "2022-01-18T19:19:48.7536239+05:30"
+generated: "2022-03-14T12:45:33.7591704+05:30"
