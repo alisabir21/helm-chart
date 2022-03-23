@@ -88,7 +88,7 @@ server:
         query.max-memory-per-node=40GB
         query.max-total-memory-per-node=45GB
         # memory.heap-headroom-per-node=25GB
-        discovery.uri=http://stx-trino-test:8080
+        discovery.uri=http://stx-trino:8080
         # CBO and Query Optimizer
         optimizer.join-reordering-strategy=AUTOMATIC
         join-distribution-type=AUTOMATIC
