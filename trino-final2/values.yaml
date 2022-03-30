@@ -6,7 +6,7 @@ image:
   repository: trinodb/trino
   pullPolicy: Always
   # Overrides the image tag whose default is the chart version.
-  tag: latest
+  tag: 359
 
 
 
@@ -79,14 +79,14 @@ server:
     affinity: {}
   worker:
     count: 2
-    graceTimeoutSeconds: 1800
+    graceTimeoutSeconds: 60
     properties: 
       config.properties: |
         coordinator=false
         http-server.http.port=8080
         query.max-memory=5000GB
-        query.max-memory-per-node=40GB
-        query.max-total-memory-per-node=45GB
+        query.max-memory-per-node=85GB
+        query.max-total-memory-per-node=90GB
         # memory.heap-headroom-per-node=25GB
         discovery.uri=http://stx-trino:8080
         # CBO and Query Optimizer
@@ -136,7 +136,7 @@ server:
     properties: 
       hive.properties: |
         connector.name=hive-hadoop2
-        hive.metastore.uri=thrift-uri
+        hive.metastore.uri=thrift://metastore.hms.svc:9083
         hive.max-partitions-per-writers=4000
         hive.collect-column-statistics-on-write=true
         hive.non-managed-table-writes-enabled=true
@@ -145,7 +145,7 @@ server:
         hive.metastore-timeout=5m
         hive.s3.aws-access-key=accesskey
         hive.s3.aws-secret-key=secretkey
-        hive.s3.endpoint=https://s3.us-west-4.svl.lyvecloud.seagate.com
+        hive.s3.endpoint=https://s3.us-east-1.lyvecloud.seagate.com
         hive.s3.path-style-access=true
         hive.s3.ssl.enabled=true
         hive.allow-register-partition-procedure=true
