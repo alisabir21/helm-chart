@@ -156,7 +156,7 @@ securityContext:
   runAsGroup: 1000
 
 service:
-  type: ClusterIP
+  type: NodePort
   annotations: 
     imageregistry: "https://hub.docker.com/"
   ports: 
