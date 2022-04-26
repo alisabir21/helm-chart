@@ -86,7 +86,7 @@ server:
         http-server.http.port=8080
         query.max-memory=5000GB
         query.max-memory-per-node=85GB
-        query.max-total-memory-per-node=90GB
+        #query.max-total-memory-per-node=90GB
         # memory.heap-headroom-per-node=25GB
         discovery.uri=http://stx-trino:8080
         # CBO and Query Optimizer
