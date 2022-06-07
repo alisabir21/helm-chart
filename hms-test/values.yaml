@@ -20,6 +20,8 @@ env:
     value: acccesskey 
   - name: AWS_SECRET_ACCESS_KEY
     value: secretkey
+  - name: HADOOP_HEAPSIZE
+    value: '25600'       
 
 ## Resource requests and limits: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
 resource:
