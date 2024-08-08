@@ -39,4 +39,7 @@ spec:
         - name: metastore-cfg-vol
           configMap:
             name: {{ template "metastore.name" . }}-cfg
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets.name }}
+    
             
