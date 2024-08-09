@@ -16,6 +16,8 @@ spec:
       labels:
         app: {{ template "metastore.name" . }}
     spec:
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets.name }}
       containers:
       - name: {{ template "metastore.name" . }}
         image: {{ .Values.image.name }}
@@ -39,7 +41,3 @@ spec:
         - name: metastore-cfg-vol
           configMap:
             name: {{ template "metastore.name" . }}-cfg
-      imagePullSecrets:
-        - name: {{ .Values.imagePullSecrets.name }}
-    
-            
