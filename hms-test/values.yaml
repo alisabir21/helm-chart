@@ -15,7 +15,7 @@ image:
   pullPolicy: Always
 
 imagePullSecrets: 
-  - name: secret-name
+  name: secret-name
 
 env:
   - name: AWS_ACCESS_KEY_ID
